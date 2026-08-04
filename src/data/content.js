@@ -1,7 +1,7 @@
 
 export const HER_NAME = "Risqina Azhary";
 export const MUSIC_SRC = "/audio/backsound.mp3";
-export const BIRTHDAY_DATE = "2026-08-05T00:42:00+07:00";
+export const BIRTHDAY_DATE = "2026-08-10T00:00:00+07:00";
 export const MUSIC_REVERB_MIX = 0.25;
 export const MUSIC_VOLUME = 0.10;
 export const PROLOGUE_LINES = [
