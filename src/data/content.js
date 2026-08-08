@@ -1,7 +1,21 @@
 
 export const HER_NAME = "Risqina Azhary";
 export const MUSIC_SRC = "/audio/backsound.mp3";
-export const BIRTHDAY_DATE = "2026-08-10T00:00:00+07:00";
+export const BIRTHDAY_DATE = "2026-08-10";
+
+const INDONESIAN_TIME_ZONES = {
+  "Asia/Jakarta": "+07:00", // WIB
+  "Asia/Pontianak": "+07:00", // WIB
+  "Asia/Makassar": "+08:00", // WITA
+  "Asia/Ujung_Pandang": "+08:00", // WITA (nama lama)
+  "Asia/Jayapura": "+09:00", // WIT
+};
+
+export function getBirthdayTimestamp() {
+  const deviceTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const offset = INDONESIAN_TIME_ZONES[deviceTimeZone] ?? "+07:00";
+  return new Date(`${BIRTHDAY_DATE}T00:00:00${offset}`).getTime();
+}
 export const MUSIC_REVERB_MIX = 0.25;
 export const MUSIC_VOLUME = 0.10;
 export const PROLOGUE_LINES = [

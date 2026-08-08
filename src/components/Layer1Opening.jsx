@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { HER_NAME, BIRTHDAY_DATE } from "../data/content";
+import { HER_NAME, getBirthdayTimestamp } from "../data/content";
 
 function getTimeLeft() {
-  const diff = new Date(BIRTHDAY_DATE).getTime() - Date.now();
+  const diff = getBirthdayTimestamp() - Date.now();
   if (diff <= 0) return null;
   return {
     days: Math.floor(diff / 86400000),

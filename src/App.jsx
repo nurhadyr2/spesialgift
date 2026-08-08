@@ -9,10 +9,10 @@ import Layer4Timeline from "./components/Layer4Timeline";
 import Layer5Reasons from "./components/Layer5Reasons";
 import Layer6Vault from "./components/Layer6Vault";
 import Layer7Closing from "./components/Layer7Closing";
-import { BIRTHDAY_DATE } from "./data/content";
+import { getBirthdayTimestamp } from "./data/content";
 
 function isTimeUp() {
-  return Date.now() >= new Date(BIRTHDAY_DATE).getTime();
+  return Date.now() >= getBirthdayTimestamp();
 }
 
 function ScrollProgress() {
