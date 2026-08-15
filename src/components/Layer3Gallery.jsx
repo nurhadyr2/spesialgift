@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion, useMotionValue, useTransform, animate } from "framer-motion";
 import { GALLERY } from "../data/content";
+import useScrollDirection from "../hooks/useScrollDirection";
 
 const SWIPE_THRESHOLD = 120;
 const VISIBLE_DEPTH = 4; // how many cards deep are rendered for the stack-peek effect
@@ -87,10 +88,12 @@ function StackCard({ item, depth, isTop, onSwiped }) {
             justifyContent: "center",
           }}
         >
-          <img
+          <motion.img
             src={item.src}
             alt={item.caption}
             draggable="false"
+            whileHover={isTop ? { scale: 1.025 } : undefined}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
             onError={(e) => {
               e.currentTarget.style.display = "none";
             }}
@@ -134,6 +137,7 @@ function StackCard({ item, depth, isTop, onSwiped }) {
 }
 
 export default function Layer3Gallery() {
+  const scrollDirection = useScrollDirection();
   const [order, setOrder] = useState(() => GALLERY.map((_, i) => i));
   const [round, setRound] = useState(0); // increments each full pass, just for a subtle counter reset feel
 
@@ -151,10 +155,21 @@ export default function Layer3Gallery() {
   return (
     <section className="section" style={{ minHeight: "100svh" }}>
       <div className="section-inner" style={{ textAlign: "center" }}>
-        <p className="eyebrow" style={{ marginBottom: "1rem" }}>
+        <motion.p
+          className="eyebrow"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false }}
+          transition={{ delay: scrollDirection === "down" ? 0 : 0.2 }}
+          style={{ marginBottom: "1rem" }}
+        >
           Galeri
-        </p>
-        <h2
+        </motion.p>
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
+          transition={{ duration: 0.8, delay: 0.1 }}
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 400,
@@ -163,16 +178,26 @@ export default function Layer3Gallery() {
           }}
         >
           Momen yang aku simpan
-        </h2>
-        <p style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "3.5rem" }}>
+        </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: false }}
+          transition={{ delay: scrollDirection === "down" ? 0.2 : 0 }}
+          style={{ color: "var(--muted)", fontSize: "0.85rem", marginBottom: "3.5rem" }}
+        >
           geser kartunya untuk lanjut ke momen berikutnya
-        </p>
+        </motion.p>
 
         {GALLERY.length === 0 ? (
           <p style={{ color: "var(--muted)" }}>Belum ada foto ditambahkan.</p>
         ) : (
           <>
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 70, rotate: -5, scale: 0.88 }}
+              whileInView={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+              viewport={{ once: false, amount: 0.35 }}
+              transition={{ type: "spring", stiffness: 110, damping: 18 }}
               style={{
                 position: "relative",
                 width: "min(340px, 82vw)",
@@ -189,7 +214,7 @@ export default function Layer3Gallery() {
                   onSwiped={sendToBack}
                 />
               ))}
-            </div>
+            </motion.div>
 
             <div
               style={{

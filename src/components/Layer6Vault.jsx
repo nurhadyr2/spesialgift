@@ -4,6 +4,13 @@ import { VAULT_MESSAGE } from "../data/content";
 
 const HOLD_DURATION = 1.4; // seconds to hold before it unlocks
 
+const MESSAGE_PARAGRAPHS = VAULT_MESSAGE.split(". ").reduce((paragraphs, sentence, index) => {
+  const paragraphIndex = Math.floor(index / 3);
+  const ending = sentence.endsWith(".") ? "" : ".";
+  paragraphs[paragraphIndex] = `${paragraphs[paragraphIndex] || ""}${paragraphs[paragraphIndex] ? " " : ""}${sentence}${ending}`;
+  return paragraphs;
+}, []);
+
 export default function Layer6Vault() {
   const [opened, setOpened] = useState(false);
   const [holding, setHolding] = useState(false);
@@ -30,10 +37,13 @@ export default function Layer6Vault() {
   };
 
   return (
-    <section className="section">
+    <section className="section" style={{ overflow: "hidden" }}>
       <div className="section-inner" style={{ textAlign: "center" }}>
-        <p className="eyebrow" style={{ marginBottom: "1rem" }}>Sesuatu untukmu</p>
-        <h2
+        <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: false }} className="eyebrow" style={{ marginBottom: "1rem" }}>Sesuatu untukmu</motion.p>
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false }}
           style={{
             fontFamily: "var(--font-display)",
             fontWeight: 400,
@@ -42,7 +52,7 @@ export default function Layer6Vault() {
           }}
         >
           {opened ? "Terbuka." : "Tekan dan tahan untuk membuka"}
-        </h2>
+        </motion.h2>
         {!opened && (
           <p style={{ color: "var(--muted)", fontSize: "0.9rem", marginBottom: "4rem" }}>
             ada sesuatu yang aku simpan di sini, khusus untuk kamu
@@ -54,7 +64,16 @@ export default function Layer6Vault() {
             onPointerDown={startHold}
             onPointerUp={cancelHold}
             onPointerLeave={cancelHold}
+            onPointerCancel={cancelHold}
+            onKeyDown={(event) => {
+              if ((event.key === "Enter" || event.key === " ") && !event.repeat) startHold();
+            }}
+            onKeyUp={(event) => {
+              if (event.key === "Enter" || event.key === " ") cancelHold();
+            }}
             aria-label="Tahan untuk membuka pesan"
+            animate={{ scale: holding ? [1, 1.025, 1] : 1, boxShadow: holding ? ["0 0 0 rgba(201,162,75,0)", "0 0 55px rgba(201,162,75,0.28)", "0 0 0 rgba(201,162,75,0)"] : "0 0 0 rgba(201,162,75,0)" }}
+            transition={{ duration: 0.9, repeat: holding ? Infinity : 0, ease: "easeInOut" }}
             style={{
               position: "relative",
               width: "min(240px, 60vw)",
@@ -78,6 +97,12 @@ export default function Layer6Vault() {
                 border: "1px solid var(--gold)",
                 opacity: glow,
               }}
+            />
+            <motion.div
+              aria-hidden="true"
+              animate={{ opacity: holding ? [0.5, 0] : 0, scale: holding ? [1, 1.32] : 1 }}
+              transition={{ duration: 1, repeat: holding ? Infinity : 0, ease: "easeOut" }}
+              style={{ position: "absolute", inset: -12, borderRadius: "50%", border: "1px solid var(--gold)" }}
             />
             <motion.div
               aria-hidden="true"
@@ -121,17 +146,23 @@ export default function Layer6Vault() {
               boxShadow: "0 0 60px -10px rgba(201,162,75,0.25)",
             }}
           >
-            <p
-              style={{
-                fontFamily: "var(--font-display)",
-                fontStyle: "italic",
-                fontSize: "clamp(1.2rem, 3vw, 1.6rem)",
-                lineHeight: 1.7,
-                whiteSpace: "pre-line",
-              }}
-            >
-              {VAULT_MESSAGE}
-            </p>
+            {MESSAGE_PARAGRAPHS.map((paragraph, index) => (
+              <motion.p
+                key={index}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.35 + index * 0.18, duration: 0.8 }}
+                style={{
+                  fontFamily: "var(--font-display)",
+                  fontStyle: "italic",
+                  fontSize: "clamp(1.1rem, 2.7vw, 1.45rem)",
+                  lineHeight: 1.75,
+                  marginBottom: index === MESSAGE_PARAGRAPHS.length - 1 ? 0 : "1.4rem",
+                }}
+              >
+                {paragraph}
+              </motion.p>
+            ))}
           </motion.div>
         )}
       </div>

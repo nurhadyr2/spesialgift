@@ -70,7 +70,8 @@ body {
   height: 420px;
   border-radius: 50%;
   pointer-events: none;
-  z-index: 9999;
+  /* Keep the light above the page background, but behind all page content. */
+  z-index: 1;
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle,
@@ -80,6 +81,11 @@ body {
   );
   mix-blend-mode: screen;
   will-change: transform;
+}
+
+main {
+  position: relative;
+  z-index: 2;
 }
 
 .eyebrow {
@@ -99,6 +105,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 8vh 6vw;
+  isolation: isolate;
 }
 
 .section-inner {
@@ -108,6 +115,37 @@ body {
 
 a {
   color: var(--gold-soft);
+}
+
+.scroll-cue {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.scroll-cue::after {
+  content: "";
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(var(--gold), transparent);
+}
+
+.reason-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.55s ease;
+}
+
+.reason-row:hover::after {
+  transform: scaleX(1);
 }
 
 @media (max-width: 640px) {

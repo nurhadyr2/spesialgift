@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MUSIC_SRC, MUSIC_VOLUME, MUSIC_REVERB_MIX } from "../data/content";
 
 export default function MusicController({ active }) {
@@ -14,7 +14,7 @@ export default function MusicController({ active }) {
   const [volume, setVolume] = useState(MUSIC_VOLUME);
 
 
-  const buildGraphIfNeeded = () => {
+  const buildGraphIfNeeded = useCallback(() => {
     if (graphBuiltRef.current) return;
     const audioEl = audioElRef.current;
     if (!audioEl) return;
@@ -27,7 +27,8 @@ export default function MusicController({ active }) {
       const source = ctx.createMediaElementSource(audioEl);
 
       const masterGain = ctx.createGain();
-      masterGain.gain.value = volume;
+      masterGain.gain.setValueAtTime(0, ctx.currentTime);
+      masterGain.gain.linearRampToValueAtTime(volume, ctx.currentTime + 2.8);
 
       const dryGain = ctx.createGain();
       dryGain.gain.value = 1;
@@ -56,13 +57,13 @@ export default function MusicController({ active }) {
       masterGainRef.current = masterGain;
       graphSourceRef.current = source;
       graphBuiltRef.current = true;
-    } catch (err) {
+    } catch {
 
       graphBuiltRef.current = "failed";
     }
-  };
+  }, [volume]);
 
-  const attemptPlay = () => {
+  const attemptPlay = useCallback(() => {
     const audioEl = audioElRef.current;
     if (!audioEl) return;
 
@@ -84,12 +85,15 @@ export default function MusicController({ active }) {
         setNeedsTapToPlay(true);
         setShowPanel(false);
       });
-  };
+  }, [buildGraphIfNeeded]);
+
+  const attemptPlayRef = useRef(attemptPlay);
+  attemptPlayRef.current = attemptPlay;
 
   useEffect(() => {
     if (!active || triggeredRef.current) return;
     triggeredRef.current = true;
-    attemptPlay();
+    attemptPlayRef.current();
   }, [active]);
 
 

@@ -118,12 +118,13 @@ export default function Layer1Opening({ locked }) {
         )}
 
         <motion.p
+          className="scroll-cue"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 3, duration: 1 }}
+          animate={{ opacity: 1, y: [0, 7, 0] }}
+          transition={{ opacity: { delay: 3, duration: 1 }, y: { delay: 3.4, duration: 2.2, repeat: Infinity, ease: "easeInOut" } }}
           style={{ marginTop: "3.5rem", color: "var(--muted)", fontSize: "0.85rem", letterSpacing: "0.05em" }}
         >
-          {locked ? "halaman ini akan terbuka penuh begitu waktunya tiba" : "gulir ke bawah ↓"}
+          {locked ? "halaman ini akan terbuka penuh begitu waktunya tiba" : "gulir perlahan"}
         </motion.p>
       </div>
     </section>
