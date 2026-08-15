@@ -117,6 +117,17 @@ a {
   color: var(--gold-soft);
 }
 
+img {
+  -webkit-user-drag: none;
+  user-select: none;
+  transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
+body.photos-protected main img {
+  filter: blur(30px) brightness(0.15) !important;
+  opacity: 0.08 !important;
+}
+
 .scroll-cue {
   display: inline-flex;
   flex-direction: column;

@@ -50,6 +50,47 @@ export default function App() {
   const [unlocked, setUnlocked] = useState(isTimeUp);
 
   useEffect(() => {
+    const preventContextMenu = (event) => event.preventDefault();
+    const preventDrag = (event) => event.preventDefault();
+    const hidePhotos = () => document.body.classList.add("photos-protected");
+    const restorePhotos = () => {
+      if (document.visibilityState === "visible") {
+        document.body.classList.remove("photos-protected");
+      }
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "hidden") hidePhotos();
+      else restorePhotos();
+    };
+    const preventDevToolsShortcuts = (event) => {
+      const key = event.key.toLowerCase();
+      const devToolsShortcut =
+        event.key === "F12" ||
+        ((event.ctrlKey || event.metaKey) && event.shiftKey && ["i", "j", "c"].includes(key)) ||
+        ((event.ctrlKey || event.metaKey) && key === "u");
+
+      if (devToolsShortcut) event.preventDefault();
+    };
+
+    document.addEventListener("contextmenu", preventContextMenu);
+    document.addEventListener("dragstart", preventDrag);
+    document.addEventListener("keydown", preventDevToolsShortcuts);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("blur", hidePhotos);
+    window.addEventListener("focus", restorePhotos);
+
+    return () => {
+      document.removeEventListener("contextmenu", preventContextMenu);
+      document.removeEventListener("dragstart", preventDrag);
+      document.removeEventListener("keydown", preventDevToolsShortcuts);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("blur", hidePhotos);
+      window.removeEventListener("focus", restorePhotos);
+      document.body.classList.remove("photos-protected");
+    };
+  }, []);
+
+  useEffect(() => {
     if (unlocked) return;
     const id = setInterval(() => {
       if (isTimeUp()) setUnlocked(true);
